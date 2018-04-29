@@ -176,6 +176,7 @@ export default {
         this.$store.dispatch('fetchPokemon', query)
           .then(() => {
             this.$store.dispatch('fetchSpecies', this.pokemon.species.name)
+            this.$router.push(this.pokemon.species.name)
             this.isLoading = false
           })
           .then(() => {
@@ -216,6 +217,11 @@ export default {
           <span class="id">{pokemon.id}</span>
         </div>
       )
+    }
+  },
+  mounted () {
+    if (this.$route.params.pokemon) {
+      this.search(this.$route.params.pokemon)
     }
   }
 }

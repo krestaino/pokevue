@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-// import Home from './views/Home.vue'
 import Pokemon from './views/Pokemon.vue'
 
 Vue.use(Router)
 
 export default new Router({
+  mode: 'history',
   routes: [
     {
       path: '/',
@@ -13,7 +13,7 @@ export default new Router({
       component: Pokemon
     },
     {
-      path: '/pokemon',
+      path: '/:pokemon',
       name: 'pokemon',
       component: Pokemon
     }
