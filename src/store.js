@@ -5,8 +5,7 @@ const Pokedex = require('pokeapi-js-wrapper')
 const options = {
   protocol: 'https',
   versionPath: '/api/v2/',
-  cache: true,
-  timeout: 5 * 1000 // 5s
+  cache: true
 }
 const P = new Pokedex.Pokedex(options)
 
@@ -33,6 +32,9 @@ export default new Vuex.Store({
             commit('SET_POKEMON', response)
             resolve()
           })
+          .catch(() => {
+            reject(new Error('Pokémon not found.'))
+          })
       })
     },
     fetchSpecies ({ commit, state }, species) {
@@ -41,6 +43,9 @@ export default new Vuex.Store({
           .then(response => {
             commit('SET_SPECIES', response)
             resolve()
+          })
+          .catch(() => {
+            reject(new Error('Species not found.'))
           })
       })
     }

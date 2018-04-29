@@ -1,10 +1,13 @@
 <template>
   <div class="pokemon">
-    <input type="text" autofocus @keydown.enter="search" v-model="query">
+    <input type="text" autofocus @keydown.enter="search" placeholder="Search by name or ID" v-model="query">
     <input type="button" value="Go" @click="search">
-    <section v-if="pokemon && pokemonSpecies">
+    <section v-if="pokemon && pokemonSpecies && !isLoading">
       <div>
         <h1 class="title-case">{{ pokemonSpecies.name }} <span class="id">#{{ pokemonSpecies.id }}</span></h1>
+        <p>
+          <img class="image" :src="pokemon.sprites.front_default">
+        </p>
         <p>{{ pokemonSpecies.flavor_text_entries.filter(description => description.language.name === 'en')[0].flavor_text }}</p>
       </div>
       <div class="card">
@@ -19,6 +22,16 @@
         <div>
           <span class="title">Genus</span>
           <span class="stat">{{ pokemonSpecies.genera.filter(genus => genus.language.name === 'en')[0].genus }}</span>
+        </div>
+      </div>
+
+      <h2>Stats</h2>
+      <div class="card">
+        <div
+          v-for="(stat, index) in pokemon.stats"
+          :key="index">
+          <span class="title">{{ toTitleCase(stat.stat.name) }}</span>
+          <span class="stat">{{ stat.base_stat }}</span>
         </div>
       </div>
 
@@ -49,11 +62,18 @@
         </span>
       </div>
     </section>
+    <Loader v-if="isLoading"/>
+    <div v-if="errorMessage">{{ errorMessage.toString() }}</div>
   </div>
 </template>
 
 <script>
+import Loader from '@/components/Loader.vue'
+
 export default {
+  components: {
+    Loader
+  },
   computed: {
     pokemon () {
       return this.$store.state.pokemon
@@ -64,14 +84,25 @@ export default {
   },
   data () {
     return {
+      errorMessage: null,
+      isLoading: false,
       query: ''
     }
   },
   methods: {
     search () {
-      this.$store.dispatch('fetchPokemon', this.query).then(() => {
-        this.$store.dispatch('fetchSpecies', this.pokemon.species.name)
-      })
+      this.isLoading = true
+      setTimeout(() => {
+        this.$store.dispatch('fetchPokemon', this.query)
+          .then(() => {
+            this.$store.dispatch('fetchSpecies', this.pokemon.species.name)
+            this.isLoading = false
+          })
+          .catch(error => {
+            this.errorMessage = error
+            this.isLoading = false
+          })
+      }, 333)
     },
     toTitleCase (string) {
       return string.replace('-', ' ').trim()
@@ -85,15 +116,18 @@ export default {
   opacity: 0.5;
 }
 
+.image {
+  height: 96px;
+  width: 96px;
+}
+
 .card {
   background-color: #ddd;
   border-radius: 3px;
-  display: inline-block;
+  display: grid;
+  grid-gap: 16px;
+  grid-template-columns: 1fr 1fr 1fr;
   padding: 12px;
-
-  div + div {
-    margin-top: 8px;
-  }
 
   span {
     display: block;
@@ -104,7 +138,8 @@ export default {
   }
 }
 
-.title-case {
+.title-case,
+.title {
   text-transform: capitalize;
 }
 
