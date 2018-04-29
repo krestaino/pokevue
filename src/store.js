@@ -35,6 +35,7 @@ export default new Vuex.Store({
             resolve()
           })
           .catch(() => {
+            commit('SET_POKEMON', null)
             reject(new Error('Pokémon not found.'))
           })
       })
