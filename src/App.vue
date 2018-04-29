@@ -1,5 +1,5 @@
 <template>
-  <div class="app themeHighLight--color--muted--10">
+  <div class="app">
     <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/pokemon">Pokemon</router-link>
@@ -11,6 +11,7 @@
 <style lang="scss">
 html {
   background-color: #111;
+  overflow-y: scroll;
 }
 
 body {

@@ -21,7 +21,7 @@
             </h1>
             <p>{{ pokemonSpecies.flavor_text_entries.filter(description => description.language.name === 'en')[0].flavor_text }}</p>
           </div>
-          <div class="card themeHighLight--background--vibrant--01">
+          <div class="card">
             <div>
               <span class="title">Height</span>
               <span class="stat">{{ pokemon.height }}</span>
@@ -37,7 +37,7 @@
           </div>
 
           <h2>Stats</h2>
-          <div class="card themeHighLight--background--vibrant--01">
+          <div class="card">
             <div
               v-for="(stat, index) in pokemon.stats"
               :key="index">
@@ -49,7 +49,7 @@
           <h2>Types</h2>
           <div class="flag-container">
             <span
-              class="title-case flag themeHighLight--background--vibrant--01"
+              class="title-case flag"
               v-for="(type, index) in pokemon.types"
               :key="index">{{ toTitleCase(type.type.name) }}
             </span>
@@ -58,7 +58,7 @@
           <h2>Abilities</h2>
           <div class="flag-container">
             <span
-              class="title-case flag themeHighLight--background--vibrant--01"
+              class="title-case flag"
               v-for="(ability, index) in pokemon.abilities"
               :key="index">{{ toTitleCase(ability.ability.name) }}
             </span>
@@ -67,7 +67,7 @@
           <h2>Moves</h2>
           <div class="flag-container">
             <span
-              class="title-case flag themeHighLight--background--vibrant--01"
+              class="title-case flag"
               v-for="(move, index) in pokemon.moves"
               :key="index">{{ toTitleCase(move.move.name) }}
             </span>
@@ -129,13 +129,13 @@ export default {
         .then((palette) => {
           this.themeHighlight = `
             <style>
-              .themeHighLight--background--vibrant--05 {
+              body {
                 background-color: rgba(${Math.round(palette.DarkVibrant._rgb[0])},${Math.round(palette.DarkVibrant._rgb[1])},${Math.round(palette.DarkVibrant._rgb[2])}, 0.5);
               }
-              .themeHighLight--background--vibrant--01 {
+              .card, .flag {
                 background-color: rgba(${Math.round(palette.DarkVibrant._rgb[0])},${Math.round(palette.DarkVibrant._rgb[1])},${Math.round(palette.DarkVibrant._rgb[2])}, 0.1);
               }
-              .themeHighLight--color--muted--10 {
+              .app {
                 color: rgba(${Math.round(palette.DarkMuted._rgb[0])},${Math.round(palette.DarkMuted._rgb[1])},${Math.round(palette.DarkMuted._rgb[2])}, 1);
               }
             </style>
@@ -227,15 +227,14 @@ h1 {
   }
 
   .name {
-    color: #111;
     font-weight: 400;
     font-size: 32px;
     text-transform: capitalize;
   }
 
   .id {
-    color: #999;
     margin-left: 4px;
+    opacity: 0.5;
   }
 }
 
@@ -244,7 +243,6 @@ p + p {
 }
 
 h2 {
-  color: #111;
   font-size: 1.5rem;
   margin: 1rem 0 0 0;
 }
@@ -262,12 +260,11 @@ h2 {
   }
 
   .title {
-    color: #666;
     font-weight: 300;
+    opacity: 0.75;
   }
 
   .stat {
-    color: #111;
     font-weight: 600;
   }
 }
