@@ -116,7 +116,7 @@ export default {
       inputProps: {
         id: 'autosuggest__input',
         onInputChange: this.onInputChange,
-        placeholder: 'Search by name or ID'
+        placeholder: 'Search for Pokémon by name or ID'
       },
       limit: 10,
       errorMessage: null,
@@ -128,6 +128,7 @@ export default {
     getColorPallet (src) {
       Vibrant.from(src).getPalette()
         .then((palette) => {
+          console.log(palette)
           this.themeHighlight = `
             <style>
               body {
