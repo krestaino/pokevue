@@ -43,7 +43,7 @@ body {
 }
 
 h1 {
-  color: #eee;
+  color: #fff;
   font-size: 20px;
   font-weight: 300;
   padding: 16px;
