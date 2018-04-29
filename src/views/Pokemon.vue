@@ -350,7 +350,7 @@ h3 {
   &.ground { background-color: #e7b465; }
   &.rock { background-color: #aaa063; }
   &.bug { background-color: #97ab3c; }
-  &.ghost { background-color: #97ab3c; }
+  &.ghost { background-color: #836e97; }
   &.steel { background-color: #8cb4be; }
   &.fire { background-color: #fc7851; }
   &.water { background-color: #4fc8db; }
