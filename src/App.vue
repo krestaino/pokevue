@@ -1,5 +1,5 @@
 <template>
-  <div id="app">
+  <div class="app themeHighLight--color--muted--10">
     <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/pokemon">Pokemon</router-link>
@@ -9,20 +9,20 @@
 </template>
 
 <style lang="scss">
+html {
+  background-color: #111;
+}
+
 body {
-  background:
-    radial-gradient(black 15%, transparent 16%) 0 0,
-    radial-gradient(black 15%, transparent 16%) 8px 8px,
-    radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
-    radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
   background-color:#282828;
   background-size:16px 16px;
   display: grid;
   min-height: 100vh;
   height: 100%;
+  transition: 0.5s;
 }
 
-#app {
+.app {
   font-family: 'Open Sans', sans-serif;
   font-size: 15px;
   font-weight: 400;

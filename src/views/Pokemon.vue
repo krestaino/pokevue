@@ -21,7 +21,7 @@
             </h1>
             <p>{{ pokemonSpecies.flavor_text_entries.filter(description => description.language.name === 'en')[0].flavor_text }}</p>
           </div>
-          <div class="card">
+          <div class="card themeHighLight--background--vibrant--01">
             <div>
               <span class="title">Height</span>
               <span class="stat">{{ pokemon.height }}</span>
@@ -37,7 +37,7 @@
           </div>
 
           <h2>Stats</h2>
-          <div class="card">
+          <div class="card themeHighLight--background--vibrant--01">
             <div
               v-for="(stat, index) in pokemon.stats"
               :key="index">
@@ -49,7 +49,7 @@
           <h2>Types</h2>
           <div class="flag-container">
             <span
-              class="title-case flag"
+              class="title-case flag themeHighLight--background--vibrant--01"
               v-for="(type, index) in pokemon.types"
               :key="index">{{ toTitleCase(type.type.name) }}
             </span>
@@ -58,7 +58,7 @@
           <h2>Abilities</h2>
           <div class="flag-container">
             <span
-              class="title-case flag"
+              class="title-case flag themeHighLight--background--vibrant--01"
               v-for="(ability, index) in pokemon.abilities"
               :key="index">{{ toTitleCase(ability.ability.name) }}
             </span>
@@ -67,7 +67,7 @@
           <h2>Moves</h2>
           <div class="flag-container">
             <span
-              class="title-case flag"
+              class="title-case flag themeHighLight--background--vibrant--01"
               v-for="(move, index) in pokemon.moves"
               :key="index">{{ toTitleCase(move.move.name) }}
             </span>
@@ -76,11 +76,13 @@
       </transition>
     </section>
     <div v-if="errorMessage">{{ errorMessage.toString() }}</div>
+    <div v-html="themeHighlight"></div>
   </div>
 </template>
 
 <script>
 import Loader from '@/components/Loader.vue'
+import * as Vibrant from 'node-vibrant'
 import { VueAutosuggest } from 'vue-autosuggest'
 
 export default {
@@ -103,7 +105,9 @@ export default {
   },
   data () {
     return {
+      themeHighlight: null,
       currentQuery: null,
+      palette: null,
       options: [{
         data: ['Frodo', 'Samwise', 'Gandalf', 'Galadriel', 'Faramir', 'Éowyn', 'Peregrine Took', 'Boromir', 'Legolas', 'Gimli', 'Gollum', 'Beren', 'Saruman', 'Sauron', 'Théoden']
       }],
@@ -120,6 +124,24 @@ export default {
     }
   },
   methods: {
+    getColorPallet (src) {
+      Vibrant.from(src).getPalette()
+        .then((palette) => {
+          this.themeHighlight = `
+            <style>
+              .themeHighLight--background--vibrant--05 {
+                background-color: rgba(${Math.round(palette.DarkVibrant._rgb[0])},${Math.round(palette.DarkVibrant._rgb[1])},${Math.round(palette.DarkVibrant._rgb[2])}, 0.5);
+              }
+              .themeHighLight--background--vibrant--01 {
+                background-color: rgba(${Math.round(palette.DarkVibrant._rgb[0])},${Math.round(palette.DarkVibrant._rgb[1])},${Math.round(palette.DarkVibrant._rgb[2])}, 0.1);
+              }
+              .themeHighLight--color--muted--10 {
+                color: rgba(${Math.round(palette.DarkMuted._rgb[0])},${Math.round(palette.DarkMuted._rgb[1])},${Math.round(palette.DarkMuted._rgb[2])}, 1);
+              }
+            </style>
+          `
+        })
+    },
     isNumber (value) {
       return typeof value === 'number' && isFinite(value)
     },
@@ -153,6 +175,9 @@ export default {
           .then(() => {
             this.$store.dispatch('fetchSpecies', this.pokemon.species.name)
             this.isLoading = false
+          })
+          .then(() => {
+            this.getColorPallet(this.pokemon.sprites.front_default)
           })
           .catch(error => {
             this.errorMessage = error
@@ -225,7 +250,6 @@ h2 {
 }
 
 .card {
-  background-color: #ddd;
   border-radius: 3px;
   display: grid;
   grid-gap: 16px;
@@ -259,7 +283,6 @@ h2 {
 }
 
 .flag {
-  background-color: #ddd;
   border-radius: 3px;
   display: inline-block;
   line-height: 1rem;
@@ -271,6 +294,7 @@ h2 {
 
 <style>
 #autosuggest__input {
+  color: #666;
   outline: none;
   position: relative;
   display: block;
@@ -320,6 +344,7 @@ h2 {
 }
 
 .autosuggest__results .autosuggest__results_item {
+  color: #666;
   cursor: pointer;
   padding: 15px;
   text-transform: capitalize;

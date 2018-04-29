@@ -14,7 +14,7 @@
 $width: 50px;
 $button-width: 12px;
 $spacing: 3px;
-$color: #D20014;
+$color: #aaa;
 $border-width: (($width - $button-width) / 2) - (2/3 * $spacing);
 $rotation-speed: 1.5s;
 
