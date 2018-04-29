@@ -8,12 +8,14 @@
       :class="{ hideSuggestions: !currentQuery }"
       :renderSuggestion="renderSuggestion"
     />
+    <div class="error" v-if="errorMessage">{{ errorMessage.toString() }}</div>
+    <div v-html="themeHighlight"></div>
     <transition name="fade">
       <Loader v-if="isLoading"/>
     </transition>
-    <section :class="{ isLoading: isLoading }">
+    <section v-if="!errorMessage" :class="{ isLoading: isLoading }">
       <transition name="fade">
-        <div v-if="pokemon && pokemonSpecies">
+        <div v-if="pokemon && pokemonSpecies" key>
           <div>
             <h2>
               <img class="image" :src="pokemon.sprites.front_default">
@@ -25,11 +27,11 @@
           <div class="card">
             <div>
               <span class="title">Height</span>
-              <span class="stat">{{ pokemon.height }}</span>
+              <span class="stat">{{ pokemon.height / 10 }} m</span>
             </div>
             <div>
               <span class="title">Weight</span>
-              <span class="stat">{{ pokemon.weight }}</span>
+              <span class="stat">{{ (pokemon.weight / 10).toFixed(1) }} kg</span>
             </div>
             <div>
               <span class="title">Genus</span>
@@ -50,7 +52,8 @@
           <h3>Types</h3>
           <div class="flag-container">
             <span
-              class="title-case flag"
+              class="title-case flag type"
+              :class="type.type.name"
               v-for="(type, index) in pokemon.types"
               :key="index">{{ toTitleCase(type.type.name) }}
             </span>
@@ -76,8 +79,6 @@
         </div>
       </transition>
     </section>
-    <div v-if="errorMessage">{{ errorMessage.toString() }}</div>
-    <div v-html="themeHighlight"></div>
   </div>
 </template>
 
@@ -108,10 +109,6 @@ export default {
     return {
       themeHighlight: null,
       currentQuery: null,
-      palette: null,
-      options: [{
-        data: ['Frodo', 'Samwise', 'Gandalf', 'Galadriel', 'Faramir', 'Éowyn', 'Peregrine Took', 'Boromir', 'Legolas', 'Gimli', 'Gollum', 'Beren', 'Saruman', 'Sauron', 'Théoden']
-      }],
       filteredOptions: [],
       inputProps: {
         id: 'autosuggest__input',
@@ -128,7 +125,6 @@ export default {
     getColorPallet (src) {
       Vibrant.from(src).getPalette()
         .then((palette) => {
-          console.log(palette)
           this.themeHighlight = `
             <style>
               body {
@@ -148,11 +144,7 @@ export default {
       return typeof value === 'number' && isFinite(value)
     },
     onSelected (option) {
-      if (isNaN(this.currentQuery)) {
-        this.search(option.item.name)
-      } else {
-        this.search(this.currentQuery)
-      }
+      this.search(option.item.name)
     },
     onInputChange (text) {
       this.currentQuery = text
@@ -163,14 +155,21 @@ export default {
 
       /* Full control over filtering. Maybe fetch from API?! Up to you!!! */
       const filteredData = this.pokemonList[0].data.filter(item => {
-        return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+        return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1 || item.id.indexOf(text) > -1
       }).slice(0, this.limit)
+
+      if (!filteredData.length) {
+        this.errorMessage = new Error('Pokémon not found.')
+      } else {
+        this.errorMessage = null
+      }
 
       this.filteredOptions = [{
         data: filteredData
       }]
     },
     search (query) {
+      this.errorMessage = null
       this.isLoading = true
       setTimeout(() => {
         this.$store.dispatch('fetchPokemon', query)
@@ -246,6 +245,11 @@ section {
   }
 }
 
+.error {
+  padding-top: 2rem;
+  text-align: center;
+}
+
 h2 {
   align-items: center;
   display: flex;
@@ -316,6 +320,29 @@ h3 {
   padding: 4px 8px;
   margin-right: 4px;
   margin-top: 4px;
+
+  &.type {
+    color: #fff;
+  }
+
+  &.normal { background-color: #b4946b; }
+  &.fighting { background-color: #ff6462; }
+  &.flying { background-color: #818ccc; }
+  &.poison { background-color: #b464a1; }
+  &.ground { background-color: #e7b465; }
+  &.rock { background-color: #aaa063; }
+  &.bug { background-color: #97ab3c; }
+  &.ghost { background-color: #97ab3c; }
+  &.steel { background-color: #8cb4be; }
+  &.fire { background-color: #fc7851; }
+  &.water { background-color: #4fc8db; }
+  &.grass { background-color: #79c85b; }
+  &.electric { background-color: #ffc711; }
+  &.psychic { background-color: #fd668f; }
+  &.ice { background-color: #6edcd3; }
+  &.dragon { background-color: #5a64ab; }
+  &.dark { background-color: #5a504f; }
+  &.fairy { background-color: #fe78aa; }
 }
 </style>
 
