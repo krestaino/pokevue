@@ -5,7 +5,7 @@
       :on-selected="onSelected"
       :limit="10"
       :input-props="inputProps"
-      :class="{ hideSuggestions: !currentQuery }"
+      :class="{ hideSuggestions: !currentQuery, errorMessage: errorMessage }"
       :renderSuggestion="renderSuggestion"
     />
     <div class="error" v-if="errorMessage">{{ errorMessage.toString() }}</div>
@@ -13,7 +13,7 @@
     <transition name="fade">
       <Loader v-if="isLoading"/>
     </transition>
-    <section v-if="!errorMessage" :class="{ isLoading: isLoading }">
+    <section :class="{ isLoading: isLoading }">
       <transition name="fade">
         <div v-if="pokemon && pokemonSpecies" key>
           <div>
@@ -111,6 +111,7 @@ export default {
       currentQuery: null,
       filteredOptions: [],
       inputProps: {
+        autofocus: true,
         id: 'autosuggest__input',
         onInputChange: this.onInputChange,
         placeholder: 'Search for Pokémon by name or ID'
@@ -246,7 +247,12 @@ section {
 }
 
 .error {
-  padding-top: 2rem;
+  background-color: rgba(255, 0, 0, 0.55);
+  border-radius: 3px;
+  color: #fff;
+  font-weight: 600;
+  margin-top: 8px;
+  padding: 6px;
   text-align: center;
 }
 
@@ -373,6 +379,10 @@ h3 {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
   display: none;
+}
+
+.errorMessage #autosuggest__input {
+  border-color: red;
 }
 
 .autosuggest__results-container {
