@@ -242,6 +242,12 @@ export default {
   box-shadow: 0px 0px 100px 0px rgba(0,0,0,0.25);
   padding: 2rem;
   position: relative;
+
+  @media (max-width: 680px) {
+    box-shadow: none;
+    border-radius: 0;
+    padding: 1rem;
+  }
 }
 
 section {
@@ -257,7 +263,7 @@ section {
   border-radius: 3px;
   color: #fff;
   font-weight: 600;
-  margin-top: 8px;
+  margin: 8px 0;
   padding: 6px;
   text-align: center;
 }
@@ -388,7 +394,7 @@ h3 {
 }
 
 .errorMessage #autosuggest__input {
-  border-color: red;
+  border-color: rgba(255, 0, 0, 0.75);
 }
 
 .autosuggest__results-container {

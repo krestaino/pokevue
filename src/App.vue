@@ -41,6 +41,11 @@ body {
   max-width: 600px;
   width: 100%;
 
+  @media (max-width: 680px) {
+    margin: 0 auto;
+    max-width: 100%;
+  }
+
   h1 {
     color: #fff;
     font-size: 20px;

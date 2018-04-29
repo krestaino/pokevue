@@ -27,6 +27,12 @@ $rotation-speed: 1.5s;
   position: absolute;
   top: calc(16px + 16px + 16px + 16px + 50px);
 
+  @media (max-width: 680px) {
+    margin: 0 auto;
+    max-width: 100%;
+    top: calc(16px + 16px + 50px);
+  }
+
   .inner {
     width: $width;
     height: $width / 2;
