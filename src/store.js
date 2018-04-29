@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import pokemonList from './pokemonList.json'
 
 const Pokedex = require('pokeapi-js-wrapper')
 const options = {
@@ -14,6 +15,7 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     pokemon: null,
+    pokemonList: pokemonList,
     pokemonSpecies: null
   },
   mutations: {

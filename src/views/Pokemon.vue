@@ -1,82 +1,101 @@
 <template>
   <div class="pokemon">
-    <input type="text" autofocus @keydown.enter="search" placeholder="Search by name or ID" v-model="query">
-    <input type="button" value="Go" @click="search">
-    <section v-if="pokemon && pokemonSpecies && !isLoading">
-      <div>
-        <h1 class="title-case">{{ pokemonSpecies.name }} <span class="id">#{{ pokemonSpecies.id }}</span></h1>
-        <p>
-          <img class="image" :src="pokemon.sprites.front_default">
-        </p>
-        <p>{{ pokemonSpecies.flavor_text_entries.filter(description => description.language.name === 'en')[0].flavor_text }}</p>
-      </div>
-      <div class="card">
-        <div>
-          <span class="title">Height</span>
-          <span class="stat">{{ pokemon.height }}</span>
-        </div>
-        <div>
-          <span class="title">Weight</span>
-          <span class="stat">{{ pokemon.weight }}</span>
-        </div>
-        <div>
-          <span class="title">Genus</span>
-          <span class="stat">{{ pokemonSpecies.genera.filter(genus => genus.language.name === 'en')[0].genus }}</span>
-        </div>
-      </div>
+    <vue-autosuggest
+      :suggestions="filteredOptions"
+      :on-selected="onSelected"
+      :limit="10"
+      :input-props="inputProps"
+      :class="{ hideSuggestions: !currentQuery }"
+    />
+    <transition name="fade">
+      <Loader v-if="isLoading"/>
+    </transition>
+    <section :class="{ isLoading: isLoading }">
+      <transition name="fade">
+        <div v-if="pokemon && pokemonSpecies">
+          <div>
+            <h1>
+              <img class="image" :src="pokemon.sprites.front_default">
+              <span class="name">{{ pokemonSpecies.name }}</span>
+              <span class="id">#{{ pokemonSpecies.id }}</span>
+            </h1>
+            <p>{{ pokemonSpecies.flavor_text_entries.filter(description => description.language.name === 'en')[0].flavor_text }}</p>
+          </div>
+          <div class="card">
+            <div>
+              <span class="title">Height</span>
+              <span class="stat">{{ pokemon.height }}</span>
+            </div>
+            <div>
+              <span class="title">Weight</span>
+              <span class="stat">{{ pokemon.weight }}</span>
+            </div>
+            <div>
+              <span class="title">Genus</span>
+              <span class="stat">{{ pokemonSpecies.genera.filter(genus => genus.language.name === 'en')[0].genus }}</span>
+            </div>
+          </div>
 
-      <h2>Stats</h2>
-      <div class="card">
-        <div
-          v-for="(stat, index) in pokemon.stats"
-          :key="index">
-          <span class="title">{{ toTitleCase(stat.stat.name) }}</span>
-          <span class="stat">{{ stat.base_stat }}</span>
+          <h2>Stats</h2>
+          <div class="card">
+            <div
+              v-for="(stat, index) in pokemon.stats"
+              :key="index">
+              <span class="title">{{ toTitleCase(stat.stat.name) }}</span>
+              <span class="stat">{{ stat.base_stat }}</span>
+            </div>
+          </div>
+
+          <h2>Types</h2>
+          <div class="flag-container">
+            <span
+              class="title-case flag"
+              v-for="(type, index) in pokemon.types"
+              :key="index">{{ toTitleCase(type.type.name) }}
+            </span>
+          </div>
+
+          <h2>Abilities</h2>
+          <div class="flag-container">
+            <span
+              class="title-case flag"
+              v-for="(ability, index) in pokemon.abilities"
+              :key="index">{{ toTitleCase(ability.ability.name) }}
+            </span>
+          </div>
+
+          <h2>Moves</h2>
+          <div class="flag-container">
+            <span
+              class="title-case flag"
+              v-for="(move, index) in pokemon.moves"
+              :key="index">{{ toTitleCase(move.move.name) }}
+            </span>
+          </div>
         </div>
-      </div>
-
-      <h2>Types</h2>
-      <div class="flag-container">
-        <span
-          class="title-case flag"
-          v-for="(type, index) in pokemon.types"
-          :key="index">{{ toTitleCase(type.type.name) }}
-        </span>
-      </div>
-
-      <h2>Abilities</h2>
-      <div class="flag-container">
-        <span
-          class="title-case flag"
-          v-for="(ability, index) in pokemon.abilities"
-          :key="index">{{ toTitleCase(ability.ability.name) }}
-        </span>
-      </div>
-
-      <h2>Moves</h2>
-      <div class="flag-container">
-        <span
-          class="title-case flag"
-          v-for="(move, index) in pokemon.moves"
-          :key="index">{{ toTitleCase(move.move.name) }}
-        </span>
-      </div>
+      </transition>
     </section>
-    <Loader v-if="isLoading"/>
     <div v-if="errorMessage">{{ errorMessage.toString() }}</div>
   </div>
 </template>
 
 <script>
 import Loader from '@/components/Loader.vue'
+import { VueAutosuggest } from 'vue-autosuggest'
 
 export default {
   components: {
-    Loader
+    Loader,
+    VueAutosuggest
   },
   computed: {
     pokemon () {
       return this.$store.state.pokemon
+    },
+    pokemonList () {
+      return [{
+        data: this.$store.state.pokemonList
+      }]
     },
     pokemonSpecies () {
       return this.$store.state.pokemonSpecies
@@ -84,16 +103,53 @@ export default {
   },
   data () {
     return {
+      currentQuery: null,
+      options: [{
+        data: ['Frodo', 'Samwise', 'Gandalf', 'Galadriel', 'Faramir', 'Éowyn', 'Peregrine Took', 'Boromir', 'Legolas', 'Gimli', 'Gollum', 'Beren', 'Saruman', 'Sauron', 'Théoden']
+      }],
+      filteredOptions: [],
+      inputProps: {
+        id: 'autosuggest__input',
+        onInputChange: this.onInputChange,
+        placeholder: 'Search by name or ID'
+      },
+      limit: 10,
       errorMessage: null,
       isLoading: false,
       query: ''
     }
   },
   methods: {
-    search () {
+    isNumber (value) {
+      return typeof value === 'number' && isFinite(value)
+    },
+    onSelected (option) {
+      if (isNaN(this.currentQuery)) {
+        this.search(option.item)
+      } else {
+        this.search(this.currentQuery)
+      }
+    },
+    onInputChange (text) {
+      this.currentQuery = text
+
+      if (text === '' || text === undefined) {
+        return
+      }
+
+      /* Full control over filtering. Maybe fetch from API?! Up to you!!! */
+      const filteredData = this.pokemonList[0].data.filter(item => {
+        return item.toLowerCase().indexOf(text.toLowerCase()) > -1
+      }).slice(0, this.limit)
+
+      this.filteredOptions = [{
+        data: filteredData
+      }]
+    },
+    search (query) {
       this.isLoading = true
       setTimeout(() => {
-        this.$store.dispatch('fetchPokemon', this.query)
+        this.$store.dispatch('fetchPokemon', query)
           .then(() => {
             this.$store.dispatch('fetchSpecies', this.pokemon.species.name)
             this.isLoading = false
@@ -102,7 +158,7 @@ export default {
             this.errorMessage = error
             this.isLoading = false
           })
-      }, 333)
+      }, 500)
     },
     toTitleCase (string) {
       return string.replace('-', ' ').trim()
@@ -112,13 +168,60 @@ export default {
 </script>
 
 <style scoped lang="scss">
-.id {
-  opacity: 0.5;
+.fade-enter-active, .fade-leave-active {
+  transition: opacity .1s;
 }
 
-.image {
-  height: 96px;
-  width: 96px;
+.fade-enter, .fade-leave-to {
+  opacity: 0;
+}
+
+.pokemon {
+  background: #fff;
+  border-radius: 3px;
+  padding: 2rem;
+  position: relative;
+}
+
+section {
+  transition: 0.3s;
+
+  &.isLoading {
+    margin-top: 92px;
+  }
+}
+
+h1 {
+  align-items: center;
+  display: flex;
+  margin-left: -16px;
+
+  .image {
+    height: 96px;
+    width: 96px;
+  }
+
+  .name {
+    color: #111;
+    font-weight: 400;
+    font-size: 32px;
+    text-transform: capitalize;
+  }
+
+  .id {
+    color: #999;
+    margin-left: 4px;
+  }
+}
+
+p + p {
+  margin: 1rem 0;
+}
+
+h2 {
+  color: #111;
+  font-size: 1.5rem;
+  margin: 1rem 0 0 0;
 }
 
 .card {
@@ -127,14 +230,21 @@ export default {
   display: grid;
   grid-gap: 16px;
   grid-template-columns: 1fr 1fr 1fr;
+  margin: 1rem 0;
   padding: 12px;
 
   span {
     display: block;
   }
 
+  .title {
+    color: #666;
+    font-weight: 300;
+  }
+
   .stat {
-    font-weight: bold;
+    color: #111;
+    font-weight: 600;
   }
 }
 
@@ -145,14 +255,92 @@ export default {
 
 .flag-container {
   margin-top: -4px;
+  padding-top: 12px;
 }
 
 .flag {
   background-color: #ddd;
   border-radius: 3px;
   display: inline-block;
+  line-height: 1rem;
   padding: 4px 8px;
   margin-right: 4px;
   margin-top: 4px;
+}
+</style>
+
+<style>
+#autosuggest__input {
+  outline: none;
+  position: relative;
+  display: block;
+  font-family: inherit;
+  font-size: 20px;
+  border: 1px solid #616161;
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  font-weight: 300;
+  text-transform: capitalize;
+}
+
+#autosuggest__input.autosuggest__input-open {
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.hideSuggestions .autosuggest__results-container {
+  display: none;
+}
+
+.autosuggest__results-container {
+  position: relative;
+  width: 100%;
+}
+
+.autosuggest__results {
+  font-weight: 300;
+  margin: 0;
+  position: absolute;
+  z-index: 10000001;
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-bottom-left-radius: 4px;
+  border-bottom-right-radius: 4px;
+  background: white;
+  padding: 0px;
+}
+
+.autosuggest__results ul {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.autosuggest__results .autosuggest__results_item {
+  cursor: pointer;
+  padding: 15px;
+  text-transform: capitalize;
+}
+
+#autosuggest ul:nth-child(1) > .autosuggest__results_title {
+  border-top: none;
+}
+
+.autosuggest__results .autosuggest__results_title {
+  color: gray;
+  font-size: 11px;
+  margin-left: 0;
+  padding: 15px 13px 5px;
+  border-top: 1px solid lightgray;
+}
+
+.autosuggest__results .autosuggest__results_item:active,
+.autosuggest__results .autosuggest__results_item:hover,
+.autosuggest__results .autosuggest__results_item:focus,
+.autosuggest__results .autosuggest__results_item.autosuggest__results_item-highlighted {
+  background-color: #ddd;
 }
 </style>
