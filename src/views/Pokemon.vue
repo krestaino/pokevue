@@ -6,6 +6,7 @@
       :limit="10"
       :input-props="inputProps"
       :class="{ hideSuggestions: !currentQuery }"
+      :renderSuggestion="renderSuggestion"
     />
     <transition name="fade">
       <Loader v-if="isLoading"/>
@@ -14,11 +15,11 @@
       <transition name="fade">
         <div v-if="pokemon && pokemonSpecies">
           <div>
-            <h1>
+            <h2>
               <img class="image" :src="pokemon.sprites.front_default">
               <span class="name">{{ pokemonSpecies.name }}</span>
               <span class="id">#{{ pokemonSpecies.id }}</span>
-            </h1>
+            </h2>
             <p>{{ pokemonSpecies.flavor_text_entries.filter(description => description.language.name === 'en')[0].flavor_text }}</p>
           </div>
           <div class="card">
@@ -36,7 +37,7 @@
             </div>
           </div>
 
-          <h2>Stats</h2>
+          <h3>Stats</h3>
           <div class="card">
             <div
               v-for="(stat, index) in pokemon.stats"
@@ -46,7 +47,7 @@
             </div>
           </div>
 
-          <h2>Types</h2>
+          <h3>Types</h3>
           <div class="flag-container">
             <span
               class="title-case flag"
@@ -55,7 +56,7 @@
             </span>
           </div>
 
-          <h2>Abilities</h2>
+          <h3>Abilities</h3>
           <div class="flag-container">
             <span
               class="title-case flag"
@@ -64,7 +65,7 @@
             </span>
           </div>
 
-          <h2>Moves</h2>
+          <h3>Moves</h3>
           <div class="flag-container">
             <span
               class="title-case flag"
@@ -147,7 +148,7 @@ export default {
     },
     onSelected (option) {
       if (isNaN(this.currentQuery)) {
-        this.search(option.item)
+        this.search(option.item.name)
       } else {
         this.search(this.currentQuery)
       }
@@ -161,7 +162,7 @@ export default {
 
       /* Full control over filtering. Maybe fetch from API?! Up to you!!! */
       const filteredData = this.pokemonList[0].data.filter(item => {
-        return item.toLowerCase().indexOf(text.toLowerCase()) > -1
+        return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1
       }).slice(0, this.limit)
 
       this.filteredOptions = [{
@@ -187,6 +188,33 @@ export default {
     },
     toTitleCase (string) {
       return string.replace('-', ' ').trim()
+    },
+    renderSuggestion (suggestion) {
+      /* You will need babel-plugin-transform-vue-jsx for this kind of full customizable
+       * rendering. If you don't use babel or the jsx transform, then you can use this
+       * function to just `return suggestion['propertyName'];`
+       */
+      const pokemon = suggestion.item
+      return (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center'
+          }}
+        >
+          <img
+            style={{
+              width: '32px',
+              height: '32px',
+              borderRadius: '15px',
+              marginRight: '10px'
+            }}
+            src={'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemon.id + '.png'}
+          />{' '}
+          <span>{pokemon.name}</span>
+          <span class="id">{pokemon.id}</span>
+        </div>
+      )
     }
   }
 }
@@ -204,6 +232,7 @@ export default {
 .pokemon {
   background: #fff;
   border-radius: 3px;
+  box-shadow: 0px 0px 100px 0px rgba(0,0,0,0.25);
   padding: 2rem;
   position: relative;
 }
@@ -216,7 +245,7 @@ section {
   }
 }
 
-h1 {
+h2 {
   align-items: center;
   display: flex;
   margin-left: -16px;
@@ -242,7 +271,7 @@ p + p {
   margin: 1rem 0;
 }
 
-h2 {
+h3 {
   font-size: 1.5rem;
   margin: 1rem 0 0 0;
 }
@@ -291,20 +320,20 @@ h2 {
 
 <style>
 #autosuggest__input {
+  border-radius: 3px;
   color: #666;
   outline: none;
   position: relative;
   display: block;
   font-family: inherit;
-  font-size: 20px;
-  border: 1px solid #616161;
+  font-size: 16px;
+  border: 1px solid #aaa;
   padding: 10px;
   width: 100%;
   box-sizing: border-box;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   font-weight: 300;
-  text-transform: capitalize;
 }
 
 #autosuggest__input.autosuggest__input-open {
@@ -313,6 +342,8 @@ h2 {
 }
 
 .hideSuggestions .autosuggest__results-container {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
   display: none;
 }
 
@@ -327,9 +358,10 @@ h2 {
   position: absolute;
   z-index: 10000001;
   width: 100%;
-  border: 1px solid #e0e0e0;
-  border-bottom-left-radius: 4px;
-  border-bottom-right-radius: 4px;
+  border: 1px solid #aaa;
+  border-top: 0;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
   background: white;
   padding: 0px;
 }
@@ -341,10 +373,26 @@ h2 {
 }
 
 .autosuggest__results .autosuggest__results_item {
+  border-top: 1px solid #dedede;
   color: #666;
   cursor: pointer;
-  padding: 15px;
+  padding: 8px;
   text-transform: capitalize;
+}
+
+.autosuggest__results .id {
+  font-size: 12px;
+  margin-top: 3px;
+  opacity: 0.5;
+}
+
+.autosuggest__results .id::before {
+  content: '#';
+  margin-left: 5px;
+}
+
+.autosuggest__results .autosuggest__results_item:first-child {
+  border-top: 0;
 }
 
 #autosuggest ul:nth-child(1) > .autosuggest__results_title {

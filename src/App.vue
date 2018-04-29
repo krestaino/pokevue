@@ -4,14 +4,20 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/pokemon">Pokemon</router-link>
     </div> -->
+    <h1>Pokévue</h1>
     <router-view/>
   </div>
 </template>
 
 <style lang="scss">
 html {
+  box-sizing: border-box;
   background-color: #111;
   overflow-y: scroll;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
 }
 
 body {
@@ -34,6 +40,14 @@ body {
   margin: 2% auto;
   max-width: 600px;
   width: 100%
+}
+
+h1 {
+  color: #eee;
+  font-size: 20px;
+  font-weight: 300;
+  padding: 16px;
+  text-align: center;
 }
 
 #nav {
