@@ -39,15 +39,15 @@ body {
   color: #585858;
   margin: 2% auto;
   max-width: 600px;
-  width: 100%
-}
+  width: 100%;
 
-h1 {
-  color: #fff;
-  font-size: 20px;
-  font-weight: 300;
-  padding: 16px;
-  text-align: center;
+  h1 {
+    color: #fff;
+    font-size: 20px;
+    font-weight: 300;
+    padding: 16px;
+    text-align: center;
+  }
 }
 
 #nav {
