@@ -29,26 +29,16 @@ export default new Vuex.Store({
   actions: {
     fetchPokemon ({ commit, state }, pokemon) {
       return new Promise((resolve, reject) => {
-        P.getPokemonByName(pokemon)
+        P.resource([`/api/v2/pokemon/${pokemon}`, `api/v2/pokemon-species/${pokemon}`])
           .then(response => {
-            commit('SET_POKEMON', response)
+            commit('SET_POKEMON', response[0])
+            commit('SET_SPECIES', response[1])
             resolve()
           })
           .catch(() => {
             commit('SET_POKEMON', null)
+            commit('SET_SPECIES', null)
             reject(new Error('Pokémon not found.'))
-          })
-      })
-    },
-    fetchSpecies ({ commit, state }, species) {
-      return new Promise((resolve, reject) => {
-        P.getPokemonSpeciesByName(species)
-          .then(response => {
-            commit('SET_SPECIES', response)
-            resolve()
-          })
-          .catch(() => {
-            reject(new Error('Species not found.'))
           })
       })
     }

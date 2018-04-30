@@ -19,8 +19,8 @@
           <div>
             <h2>
               <img class="image" :src="pokemon.sprites.front_default">
-              <span class="name">{{ pokemonSpecies.name }}</span>
-              <span class="id">#{{ pokemonSpecies.id }}</span>
+              <span class="name">{{ pokemon.name }}</span>
+              <span class="id">#{{ pokemon.id }}</span>
             </h2>
             <p>{{ pokemonSpecies.flavor_text_entries.filter(description => description.language.name === 'en')[0].flavor_text }}</p>
           </div>
@@ -154,7 +154,6 @@ export default {
         return
       }
 
-      /* Full control over filtering. Maybe fetch from API?! Up to you!!! */
       const filteredData = this.pokemonList[0].data.filter(item => {
         return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1 || item.id.indexOf(text) > -1
       }).slice(0, this.limit)
@@ -175,12 +174,9 @@ export default {
       setTimeout(() => {
         this.$store.dispatch('fetchPokemon', query)
           .then(() => {
-            this.$store.dispatch('fetchSpecies', this.pokemon.species.name)
             this.$router.push(this.pokemon.species.name)
-            this.isLoading = false
-          })
-          .then(() => {
             this.getColorPallet(this.pokemon.sprites.front_default)
+            this.isLoading = false
           })
           .catch(error => {
             this.errorMessage = error
