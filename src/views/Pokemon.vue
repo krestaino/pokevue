@@ -64,10 +64,10 @@
             <span
               class="title-case flag type"
               :class="type"
-              v-for="(type, index) in this.typeEffectiveness(pokemon.types).weaknesses"
+              v-for="(type, index) in typeEffectiveness.weaknesses.sort()"
               :key="index">{{ toTitleCase(type) }}
             </span>
-            <span class="title-case flag type none" v-if="!this.typeEffectiveness(pokemon.types).weaknesses.length">None</span>
+            <span class="title-case flag type none" v-if="!typeEffectiveness.weaknesses.length">None</span>
           </div>
 
           <h3>Strengths</h3>
@@ -75,10 +75,10 @@
             <span
               class="title-case flag type"
               :class="type"
-              v-for="(type, index) in this.typeEffectiveness(pokemon.types).strengths"
+              v-for="(type, index) in typeEffectiveness.strengths.sort()"
               :key="index">{{ toTitleCase(type) }}
             </span>
-            <span class="title-case flag type none" v-if="!this.typeEffectiveness(pokemon.types).strengths.length">None</span>
+            <span class="title-case flag type none" v-if="!typeEffectiveness.strengths.length">None</span>
           </div>
 
           <h3>Immunities</h3>
@@ -86,10 +86,10 @@
             <span
               class="title-case flag type"
               :class="type"
-              v-for="(type, index) in this.typeEffectiveness(pokemon.types).immunities"
+              v-for="(type, index) in typeEffectiveness.immunities.sort()"
               :key="index">{{ toTitleCase(type) }}
             </span>
-            <span class="title-case flag type none" v-if="!this.typeEffectiveness(pokemon.types).immunities.length">None</span>
+            <span class="title-case flag type none" v-if="!typeEffectiveness.immunities.length">None</span>
           </div>
 
           <h3>Abilities</h3>
@@ -119,7 +119,7 @@
 import Loader from '@/components/Loader.vue'
 import * as Vibrant from 'node-vibrant'
 import { VueAutosuggest } from 'vue-autosuggest'
-import typeEffectiveness from '../util/typeEffectiveness.js'
+import getTypeEffectiveness from '../util/getTypeEffectiveness.js'
 
 export default {
   components: {
@@ -127,7 +127,7 @@ export default {
     VueAutosuggest
   },
   mixins: [
-    typeEffectiveness
+    getTypeEffectiveness
   ],
   computed: {
     pokemon () {
@@ -140,6 +140,9 @@ export default {
     },
     pokemonSpecies () {
       return this.$store.state.pokemonSpecies
+    },
+    typeEffectiveness () {
+      return this.getTypeEffectiveness(this.$store.state.pokemon.types)
     }
   },
   data () {
@@ -214,7 +217,6 @@ export default {
             this.$router.push(this.pokemon.species.name)
             this.getColorPallet(this.pokemon.sprites.front_default)
             this.isLoading = false
-            console.log(this.typeEffectiveness(this.pokemon.types))
           })
           .catch(error => {
             this.errorMessage = error

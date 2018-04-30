@@ -1,6 +1,6 @@
-const typeEffectiveness = {
+const getTypeEffectiveness = {
   methods: {
-    typeEffectiveness (types) {
+    getTypeEffectiveness (types) {
       const immunities = []
       const strengths = []
       const weaknesses = []
@@ -96,4 +96,4 @@ const typeEffectiveness = {
   }
 }
 
-export default typeEffectiveness
+export default getTypeEffectiveness
