@@ -59,6 +59,39 @@
             </span>
           </div>
 
+          <h3>Weaknesses</h3>
+          <div class="flag-container">
+            <span
+              class="title-case flag type"
+              :class="type"
+              v-for="(type, index) in this.typeEffectiveness(pokemon.types).weaknesses"
+              :key="index">{{ toTitleCase(type) }}
+            </span>
+            <span class="title-case flag type none" v-if="!this.typeEffectiveness(pokemon.types).weaknesses.length">None</span>
+          </div>
+
+          <h3>Strengths</h3>
+          <div class="flag-container">
+            <span
+              class="title-case flag type"
+              :class="type"
+              v-for="(type, index) in this.typeEffectiveness(pokemon.types).strengths"
+              :key="index">{{ toTitleCase(type) }}
+            </span>
+            <span class="title-case flag type none" v-if="!this.typeEffectiveness(pokemon.types).strengths.length">None</span>
+          </div>
+
+          <h3>Immunities</h3>
+          <div class="flag-container">
+            <span
+              class="title-case flag type"
+              :class="type"
+              v-for="(type, index) in this.typeEffectiveness(pokemon.types).immunities"
+              :key="index">{{ toTitleCase(type) }}
+            </span>
+            <span class="title-case flag type none" v-if="!this.typeEffectiveness(pokemon.types).immunities.length">None</span>
+          </div>
+
           <h3>Abilities</h3>
           <div class="flag-container">
             <span
@@ -86,12 +119,16 @@
 import Loader from '@/components/Loader.vue'
 import * as Vibrant from 'node-vibrant'
 import { VueAutosuggest } from 'vue-autosuggest'
+import typeEffectiveness from '../util/typeEffectiveness.js'
 
 export default {
   components: {
     Loader,
     VueAutosuggest
   },
+  mixins: [
+    typeEffectiveness
+  ],
   computed: {
     pokemon () {
       return this.$store.state.pokemon
@@ -177,6 +214,7 @@ export default {
             this.$router.push(this.pokemon.species.name)
             this.getColorPallet(this.pokemon.sprites.front_default)
             this.isLoading = false
+            console.log(this.typeEffectiveness(this.pokemon.types))
           })
           .catch(error => {
             this.errorMessage = error
@@ -337,6 +375,10 @@ h3 {
 
   &.type {
     color: #fff;
+  }
+
+  &.none {
+    background-color: #999;
   }
 
   &.normal { background-color: #b4946b; }
