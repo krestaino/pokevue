@@ -133,9 +133,9 @@ export default {
     pokemon () {
       return this.$store.state.pokemon
     },
-    pokemonList () {
+    allPokemon () {
       return [{
-        data: this.$store.state.pokemonList
+        data: this.$store.state.allPokemon
       }]
     },
     pokemonSpecies () {
@@ -185,7 +185,7 @@ export default {
       return typeof value === 'number' && isFinite(value)
     },
     onSelected (option) {
-      this.search(option.item.name)
+      this.search(option.item)
     },
     onInputChange (text) {
       this.currentQuery = text
@@ -194,8 +194,9 @@ export default {
         return
       }
 
-      const filteredData = this.pokemonList[0].data.filter(item => {
-        return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1 || item.id.indexOf(text) > -1
+      const filteredData = this.allPokemon[0].data.results.filter((pokemon, index) => {
+        pokemon.id = (pokemon.url.match(/([^/]*)\/*$/)[1])
+        return pokemon.name.toLowerCase().indexOf(text.toLowerCase()) > -1 || pokemon.id.indexOf(text) > -1
       }).slice(0, this.limit)
 
       if (!filteredData.length) {
@@ -214,7 +215,7 @@ export default {
       setTimeout(() => {
         this.$store.dispatch('fetchPokemon', query)
           .then(() => {
-            this.$router.push(this.pokemon.species.name)
+            this.$router.push(this.pokemon.name)
             this.getColorPallet(this.pokemon.sprites.front_default)
             this.isLoading = false
           })
@@ -257,7 +258,10 @@ export default {
   },
   mounted () {
     if (this.$route.params.pokemon) {
-      this.search(this.$route.params.pokemon)
+      this.search({
+        id: null,
+        name: this.$route.params.pokemon
+      })
     }
   }
 }
