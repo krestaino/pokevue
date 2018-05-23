@@ -9,23 +9,6 @@
   </div>
 </template>
 
-<script>
-export default {
-  mounted () {
-    this.errorMessage = null
-    this.isLoading = true
-    this.$store.dispatch('fetchAllPokemon')
-      .then(() => {
-        this.isLoading = false
-      })
-      .catch(error => {
-        this.errorMessage = error
-        this.isLoading = false
-      })
-  }
-}
-</script>
-
 <style lang="scss">
 html {
   box-sizing: border-box;
