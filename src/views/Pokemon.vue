@@ -257,6 +257,8 @@ export default {
     }
   },
   mounted () {
+    this.$store.dispatch('fetchAllPokemon')
+
     if (this.$route.params.pokemon) {
       this.search({
         id: null,
