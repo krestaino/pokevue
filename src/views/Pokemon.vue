@@ -63,7 +63,7 @@
           <div class="flag-container">
             <span
               class="title-case flag type"
-              :class="type"
+              :class="[type, { super: typeEffectiveness.weaknessesSuper.includes(type) }]"
               v-for="(type, index) in typeEffectiveness.weaknesses.sort()"
               :key="index">{{ toTitleCase(type) }}
             </span>
@@ -74,8 +74,9 @@
           <div class="flag-container">
             <span
               class="title-case flag type"
-              :class="type"
+              :class="[type, { super: typeEffectiveness.strengthsSuper.includes(type) }]"
               v-for="(type, index) in typeEffectiveness.strengths.sort()"
+              v-if="!typeEffectiveness.immunities.includes(type)"
               :key="index">{{ toTitleCase(type) }}
             </span>
             <span class="title-case flag type none" v-if="!typeEffectiveness.strengths.length">None</span>
@@ -377,6 +378,7 @@ h3 {
 }
 
 .flag {
+  border: 2px solid transparent;
   border-radius: 3px;
   display: inline-block;
   line-height: 1rem;
@@ -386,6 +388,10 @@ h3 {
 
   &.type {
     color: #fff;
+  }
+
+  &.super {
+    border: 2px solid #111;
   }
 
   &.none {

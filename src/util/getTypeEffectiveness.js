@@ -1,9 +1,16 @@
 const getTypeEffectiveness = {
   methods: {
+    count (array) {
+      return array.reduce((a, b) =>
+        Object.assign(a, {[b]: (a[b] || 0) + 1}), {})
+    },
+    duplicates (dict) {
+      return Object.keys(dict).filter((a) => dict[a] > 1)
+    },
     getTypeEffectiveness (types) {
-      const immunities = []
-      const strengths = []
-      const weaknesses = []
+      var immunities = []
+      var strengths = []
+      var weaknesses = []
 
       for (const type of types) {
         switch (type.type.name) {
@@ -87,10 +94,19 @@ const getTypeEffectiveness = {
             break
         }
       }
+
+      const strengthsSuper = this.duplicates(this.count(strengths))
+      const weaknessesSuper = this.duplicates(this.count(weaknesses))
+
+      strengths = [ ...new Set(strengths) ]
+      weaknesses = [ ...new Set(weaknesses) ]
+
       return {
         immunities,
         strengths,
-        weaknesses
+        strengthsSuper,
+        weaknesses,
+        weaknessesSuper
       }
     }
   }
