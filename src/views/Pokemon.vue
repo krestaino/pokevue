@@ -166,6 +166,9 @@ export default {
     getColorPallet (src) {
       Vibrant.from(src).getPalette()
         .then((palette) => {
+          if (!palette.DarkVibrant) {
+            palette.DarkVibrant = palette.DarkMuted
+          }
           this.themeHighlight = `
             <style>
               body {
@@ -195,7 +198,7 @@ export default {
       }
 
       const filteredData = this.allPokemon[0].data.results.filter((pokemon, index) => {
-        pokemon.id = (pokemon.url.match(/([^/]*)\/*$/)[1])
+        pokemon.id = (pokemon.url.match(/([^/]*)\/*$/)[1]) // adding the ID to the pokemon object to allow for searching by name or ID
         return pokemon.name.toLowerCase().indexOf(text.toLowerCase()) > -1 || pokemon.id.indexOf(text) > -1
       }).slice(0, this.limit)
 
