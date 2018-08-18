@@ -143,19 +143,26 @@ export default {
     getColorPallet (src) {
       Vibrant.from(src).getPalette()
         .then((palette) => {
-          if (!palette.DarkVibrant) {
-            palette.DarkVibrant = palette.DarkMuted
+          let r = 80
+          let g = 80
+          let b = 80
+
+          if (palette.DarkMuted && palette.DarkVibrant) {
+            r = Math.round(palette.DarkMuted._rgb[0])
+            g = Math.round(palette.DarkMuted._rgb[1])
+            b = Math.round(palette.DarkMuted._rgb[2])
           }
+
           this.themeHighlight = `
             <style>
               body {
-                background-color: rgba(${Math.round(palette.DarkVibrant._rgb[0])},${Math.round(palette.DarkVibrant._rgb[1])},${Math.round(palette.DarkVibrant._rgb[2])}, 0.5);
+                background-color: rgba(${r},${g},${b}, 0.5);
               }
               .card, .flag {
-                background-color: rgba(${Math.round(palette.DarkVibrant._rgb[0])},${Math.round(palette.DarkVibrant._rgb[1])},${Math.round(palette.DarkVibrant._rgb[2])}, 0.1);
+                background-color: rgba(${r},${g},${b}, 0.1);
               }
               .app {
-                color: rgba(${Math.round(palette.DarkMuted._rgb[0])},${Math.round(palette.DarkMuted._rgb[1])},${Math.round(palette.DarkMuted._rgb[2])}, 1);
+                color: rgba(${r},${g},${b}, 1);
               }
             </style>
           `
@@ -209,8 +216,7 @@ export default {
 
 .pokemon {
   background: #fff;
-  border-top-right-radius: 3px;
-  border-bottom-right-radius: 3px;
+  border-radius: 3px;
   box-shadow: 0px 0px 100px 0px rgba(0,0,0,0.25);
   padding: 2rem;
   position: relative;
@@ -226,7 +232,7 @@ section {
   transition: 0.3s;
 
   &.isLoading {
-    margin-top: 48px;
+    transform: translateY(48px);
   }
 }
 
