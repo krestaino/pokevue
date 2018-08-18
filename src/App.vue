@@ -4,7 +4,9 @@
       <router-link to="/">Home</router-link> |
       <router-link to="/pokemon">Pokemon</router-link>
     </div> -->
-    <h1>Pokévue</h1>
+    <h1>
+      <router-link to="/">Pokévue</router-link>
+    </h1>
     <router-view/>
   </div>
 </template>
@@ -53,6 +55,11 @@ body {
     font-weight: 300;
     margin-bottom: 1rem;
     text-align: center;
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
   }
 }
 
