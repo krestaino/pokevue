@@ -25,7 +25,7 @@ $rotation-speed: 1.5s;
   left: calc(50% - #{$width / 2});
   display: inline-block;
   position: absolute;
-  top: calc(16px + 16px + 16px + 16px + 50px);
+  // top: calc(16px + 16px + 16px + 16px + 50px);
 
   @media (max-width: 680px) {
     margin: 0 auto;

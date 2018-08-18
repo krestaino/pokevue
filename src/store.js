@@ -34,7 +34,7 @@ export default new Vuex.Store({
       return new Promise((resolve, reject) => {
         P.resource('/api/v2/pokemon/?limit=802')
           .then(response => {
-            commit('SET_ALL_POKEMON', response)
+            commit('SET_ALL_POKEMON', response.results)
             resolve()
           })
           .catch(error => {

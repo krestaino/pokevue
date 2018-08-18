@@ -4,7 +4,9 @@ import router from './router'
 import store from './store'
 import './registerServiceWorker'
 import 'reset-css'
+import VueFuse from 'vue-fuse'
 
+Vue.use(VueFuse)
 Vue.config.productionTip = false
 
 new Vue({

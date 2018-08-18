@@ -1,13 +1,5 @@
 <template>
   <div class="pokemon">
-    <vue-autosuggest
-      :suggestions="filteredOptions"
-      :on-selected="onSelected"
-      :limit="10"
-      :input-props="inputProps"
-      :class="{ hideSuggestions: !currentQuery, errorMessage: errorMessage }"
-      :renderSuggestion="renderSuggestion"
-    />
     <div class="error" v-if="errorMessage">{{ errorMessage.toString() }}</div>
     <div v-html="themeHighlight"></div>
     <transition name="fade">
@@ -119,13 +111,11 @@
 <script>
 import Loader from '@/components/Loader.vue'
 import * as Vibrant from 'node-vibrant'
-import { VueAutosuggest } from 'vue-autosuggest'
 import getTypeEffectiveness from '../util/getTypeEffectiveness.js'
 
 export default {
   components: {
-    Loader,
-    VueAutosuggest
+    Loader
   },
   mixins: [
     getTypeEffectiveness
@@ -133,11 +123,6 @@ export default {
   computed: {
     pokemon () {
       return this.$store.state.pokemon
-    },
-    allPokemon () {
-      return [{
-        data: this.$store.state.allPokemon
-      }]
     },
     pokemonSpecies () {
       return this.$store.state.pokemonSpecies
@@ -148,19 +133,10 @@ export default {
   },
   data () {
     return {
-      themeHighlight: null,
-      currentQuery: null,
-      filteredOptions: [],
-      inputProps: {
-        autofocus: true,
-        id: 'autosuggest__input',
-        onInputChange: this.onInputChange,
-        placeholder: 'Search for Pokémon by name or ID'
-      },
-      limit: 10,
       errorMessage: null,
-      isLoading: false,
-      query: ''
+      themeHighlight: null,
+      limit: 10,
+      isLoading: false
     }
   },
   methods: {
@@ -188,36 +164,14 @@ export default {
     isNumber (value) {
       return typeof value === 'number' && isFinite(value)
     },
-    onSelected (option) {
-      this.search(option.item)
-    },
-    onInputChange (text) {
-      this.currentQuery = text
-
-      if (text === '' || text === undefined) {
-        return
-      }
-
-      const filteredData = this.allPokemon[0].data.results.filter((pokemon, index) => {
-        pokemon.id = (pokemon.url.match(/([^/]*)\/*$/)[1]) // adding the ID to the pokemon object to allow for searching by name or ID
-        return pokemon.name.toLowerCase().indexOf(text.toLowerCase()) > -1 || pokemon.id.indexOf(text) > -1
-      }).slice(0, this.limit)
-
-      if (!filteredData.length) {
-        this.errorMessage = new Error('Pokémon not found.')
-      } else {
-        this.errorMessage = null
-      }
-
-      this.filteredOptions = [{
-        data: filteredData
-      }]
-    },
-    search (query) {
+    search () {
       this.errorMessage = null
       this.isLoading = true
       setTimeout(() => {
-        this.$store.dispatch('fetchPokemon', query)
+        this.$store.dispatch('fetchPokemon', {
+          id: null,
+          name: this.$route.params.pokemon
+        })
           .then(() => {
             this.$router.push(this.pokemon.name)
             this.getColorPallet(this.pokemon.sprites.front_default)
@@ -231,44 +185,10 @@ export default {
     },
     toTitleCase (string) {
       return string.replace('-', ' ').trim()
-    },
-    renderSuggestion (suggestion) {
-      /* You will need babel-plugin-transform-vue-jsx for this kind of full customizable
-       * rendering. If you don't use babel or the jsx transform, then you can use this
-       * function to just `return suggestion['propertyName'];`
-       */
-      const pokemon = suggestion.item
-      return (
-        <div
-          style={{
-            display: 'flex',
-            alignItems: 'center'
-          }}
-        >
-          <img
-            style={{
-              width: '32px',
-              height: '32px',
-              borderRadius: '15px',
-              marginRight: '10px'
-            }}
-            src={'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/' + pokemon.id + '.png'}
-          />{' '}
-          <span>{pokemon.name}</span>
-          <span class="id">{pokemon.id}</span>
-        </div>
-      )
     }
   },
   mounted () {
-    this.$store.dispatch('fetchAllPokemon')
-
-    if (this.$route.params.pokemon) {
-      this.search({
-        id: null,
-        name: this.$route.params.pokemon
-      })
-    }
+    this.search()
   }
 }
 </script>
@@ -300,7 +220,7 @@ section {
   transition: 0.3s;
 
   &.isLoading {
-    margin-top: 92px;
+    margin-top: 48px;
   }
 }
 
@@ -416,106 +336,5 @@ h3 {
   &.dragon { background-color: #5a64ab; }
   &.dark { background-color: #5a504f; }
   &.fairy { background-color: #fe78aa; }
-}
-</style>
-
-<style>
-#autosuggest__input {
-  border-radius: 3px;
-  color: #666;
-  outline: none;
-  position: relative;
-  display: block;
-  font-family: inherit;
-  font-size: 16px;
-  border: 1px solid #aaa;
-  padding: 10px;
-  width: 100%;
-  box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box;
-  font-weight: 300;
-}
-
-#autosuggest__input.autosuggest__input-open {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-
-.hideSuggestions .autosuggest__results-container {
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-  display: none;
-}
-
-.errorMessage #autosuggest__input {
-  border-color: rgba(255, 0, 0, 0.75);
-}
-
-.autosuggest__results-container {
-  position: relative;
-  width: 100%;
-}
-
-.autosuggest__results {
-  font-weight: 300;
-  margin: 0;
-  position: absolute;
-  z-index: 10000001;
-  width: 100%;
-  border: 1px solid #aaa;
-  border-top: 0;
-  border-bottom-left-radius: 3px;
-  border-bottom-right-radius: 3px;
-  background: white;
-  padding: 0px;
-}
-
-.autosuggest__results ul {
-  list-style: none;
-  padding-left: 0;
-  margin: 0;
-}
-
-.autosuggest__results .autosuggest__results_item {
-  border-top: 1px solid #dedede;
-  color: #666;
-  cursor: pointer;
-  padding: 8px;
-  text-transform: capitalize;
-}
-
-.autosuggest__results .id {
-  font-size: 12px;
-  margin-top: 3px;
-  opacity: 0.5;
-}
-
-.autosuggest__results .id::before {
-  content: '#';
-  margin-left: 5px;
-}
-
-.autosuggest__results .autosuggest__results_item:first-child {
-  border-top: 0;
-}
-
-#autosuggest ul:nth-child(1) > .autosuggest__results_title {
-  border-top: none;
-}
-
-.autosuggest__results .autosuggest__results_title {
-  color: gray;
-  font-size: 11px;
-  margin-left: 0;
-  padding: 15px 13px 5px;
-  border-top: 1px solid lightgray;
-}
-
-.autosuggest__results .autosuggest__results_item:active,
-.autosuggest__results .autosuggest__results_item:hover,
-.autosuggest__results .autosuggest__results_item:focus,
-.autosuggest__results .autosuggest__results_item.autosuggest__results_item-highlighted {
-  background-color: #ddd;
 }
 </style>
