@@ -38,7 +38,8 @@ body {
   -moz-osx-font-smoothing: grayscale;
   color: #585858;
   padding: 3rem;
-  max-width: 2560px;
+  margin: 0 auto;
+  max-width: 1440px;
   width: 100%;
 
   @media (max-width: 680px) {

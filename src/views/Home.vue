@@ -81,8 +81,24 @@ ul {
   margin-top: 3rem;
 
   li {
+    opacity: 0;
     padding: 4px;
     width: 108px;
+
+    @for $i from 1 through 1000 {
+      &:nth-child( #{$i} ) {
+        animation: fade .3s #{$i * 0.003}s ease 1 forwards;
+      }
+    }
+
+    @keyframes fade {
+      0% {
+        opacity: 0;
+      }
+      100% {
+        opacity: 1;
+      }
+    }
 
     a {
       align-items: center;
