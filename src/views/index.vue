@@ -54,11 +54,10 @@ export default {
   },
   watch: {
     searchQuery () {
-      if (this.searchQuery === '') {
-        this.searchResults = this.allPokemon
-      }
       this.$search(this.searchQuery, this.allPokemon, this.options).then(results => {
-        this.searchResults = results
+        (this.searchQuery === '' && !results.length)
+          ? this.searchResults = null
+          : this.searchResults = results
       })
     }
   }
@@ -68,6 +67,7 @@ export default {
 <style lang="scss" scoped>
 input {
   border-radius: 3px;
+  box-shadow: 0px 0px 100px 0px rgba(0,0,0,0.25);
   color: #666;
   outline: none;
   position: relative;
