@@ -43,6 +43,9 @@ export default {
   },
   watch: {
     searchQuery () {
+      if (this.searchQuery === '') {
+        this.searchResults = this.allPokemon
+      }
       this.$search(this.searchQuery, this.allPokemon, this.options).then(results => {
         this.searchResults = results
       })
@@ -90,7 +93,7 @@ ul {
       flex-direction: column;
       height: 100%;
       justify-content: center;
-      padding: 8px;
+      padding: 16px 8px;
       position: relative;
       text-decoration: none;
       transition: 0.3s;
@@ -115,8 +118,10 @@ ul {
 
       span {
         font-size: 12px;
+        line-height: 13px;
+        text-align: center;
         text-transform: capitalize;
-        margin-top: auto;
+        margin-top: 4px;
       }
     }
   }
