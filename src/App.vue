@@ -39,7 +39,7 @@ body {
   color: #585858;
   padding: 3rem;
   margin: 0 auto;
-  max-width: 1440px;
+  max-width: 1200px;
   width: 100%;
 
   @media (max-width: 680px) {

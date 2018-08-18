@@ -189,6 +189,11 @@ export default {
   },
   mounted () {
     this.search()
+  },
+  watch: {
+    '$route' () {
+      this.search()
+    }
   }
 }
 </script>
@@ -204,7 +209,8 @@ export default {
 
 .pokemon {
   background: #fff;
-  border-radius: 3px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
   box-shadow: 0px 0px 100px 0px rgba(0,0,0,0.25);
   padding: 2rem;
   position: relative;

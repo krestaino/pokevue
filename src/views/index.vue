@@ -1,20 +1,30 @@
 <template>
   <div class="home">
     <input v-model="searchQuery" autofocus placeholder="Search" type="text">
-    <ul v-if="pokemonList">
-      <li v-for="(pokemon, index) in pokemonList" :key="index">
-        <router-link :to="'/' + pokemon.name">
-          <div>{{ pokemon.id }}</div>
-          <img class="image" :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`">
-          <span>{{ pokemon.name }}</span>
-        </router-link>
-      </li>
-    </ul>
+    <div class="container" :class="{ '--open': $route.params.pokemon }">
+      <ul v-if="pokemonList" :style="{ height: maxHeight + 'px' }">
+        <li v-for="(pokemon, index) in pokemonList" :key="index">
+          <router-link :to="'/' + pokemon.name">
+            <div>{{ pokemon.id }}</div>
+            <img class="image" :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.id}.png`">
+            <span>{{ pokemon.name }}</span>
+          </router-link>
+        </li>
+      </ul>
+      <aside>
+        <Pokemon v-if="$route.params.pokemon" :pokemon="$route.params.pokemon"/>
+      </aside>
+    </div>
   </div>
 </template>
 
 <script>
+import Pokemon from '@/components/Pokemon.vue'
+
 export default {
+  components: {
+    Pokemon
+  },
   computed: {
     allPokemon () {
       return (!this.$store.state.allPokemon) || this.$store.state.allPokemon.map(pokemon => {
@@ -34,6 +44,7 @@ export default {
         keys: ['name', 'id'],
         threshold: 0.1
       },
+      maxHeight: null,
       searchResults: this.allPokemon,
       searchQuery: ''
     }
@@ -74,15 +85,31 @@ input {
   margin: auto;
 }
 
+.container {
+  display: flex;
+  margin-top: 3rem;
+  position: relative;
+  transition: transform 0.3s;
+
+  &.--open {
+    transform: translateX(-300px);
+  }
+}
+
 ul {
   display: flex;
+  flex: 4;
   flex-wrap: wrap;
   justify-content: center;
-  margin-top: 3rem;
+  transition: 0.3s;
+
+  .--open & {
+    justify-content: flex-start;
+  }
 
   li {
     opacity: 0;
-    padding: 4px;
+    padding: 0 8px 8px 0;
     width: 108px;
 
     @for $i from 1 through 1000 {
@@ -102,6 +129,7 @@ ul {
 
     a {
       align-items: center;
+      background-color: rgba(#fff, 0.025);
       border: 1px solid rgba(#fff, 0.1);
       border-radius: 3px;
       color: #fff;
@@ -114,7 +142,8 @@ ul {
       text-decoration: none;
       transition: 0.3s;
 
-      &:hover {
+      &:hover,
+      &.router-link-active  {
         background-color: rgba(#fff, 0.1);
         border-color: rgba(#fff, 0.2);
       }
@@ -140,6 +169,20 @@ ul {
         margin-top: 4px;
       }
     }
+  }
+}
+
+aside {
+  left: 100%;
+  opacity: 0;
+  position: absolute;
+  right: 0;
+  top: 0;
+  transition: 0.3s;
+  width: 600px;
+
+  .--open & {
+    opacity: 1;
   }
 }
 </style>
