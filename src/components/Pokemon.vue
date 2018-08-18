@@ -85,7 +85,7 @@
             <span class="title-case flag type none" v-if="!typeEffectiveness.immunities.length">None</span>
           </div>
 
-          <h3>Abilities</h3>
+          <!-- <h3>Abilities</h3>
           <div class="flag-container">
             <span
               class="title-case flag"
@@ -97,11 +97,12 @@
           <h3>Moves</h3>
           <div class="flag-container">
             <span
+              v-for="(move, index) in pokemon.moves.slice(0,24)"
               class="title-case flag"
-              v-for="(move, index) in pokemon.moves"
+              :class="{ last: index === 23 }"
               :key="index">{{ toTitleCase(move.move.name) }}
             </span>
-          </div>
+          </div> -->
         </div>
       </transition>
     </section>
@@ -233,7 +234,7 @@ section {
   transition: 0.3s;
 
   &.isLoading {
-    transform: translateY(48px);
+    transform: translateY(24px);
   }
 }
 
@@ -316,6 +317,7 @@ h3 {
   display: inline-block;
   line-height: 1rem;
   padding: 4px 8px;
+  position: relative;
   margin-right: 4px;
   margin-top: 4px;
 
@@ -329,6 +331,14 @@ h3 {
 
   &.none {
     background-color: #999;
+  }
+
+  &.last::after {
+    bottom: 0;
+    content: ' ...';
+    left: calc(100% + 8px);
+    position: absolute;
+    right: 0;
   }
 
   &.normal { background-color: #b4946b; }

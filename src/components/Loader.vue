@@ -11,7 +11,7 @@
 </template>
 
 <style lang="scss">
-$width: 50px;
+$width: 36px;
 $button-width: 12px;
 $spacing: 3px;
 $color: #ccc;

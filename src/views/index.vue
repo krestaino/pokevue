@@ -87,12 +87,13 @@ input {
 
 .container {
   display: flex;
-  margin-top: 3rem;
+  margin: 3rem auto;
+  max-width: 1200px;
   position: relative;
   transition: transform 0.3s;
 
   &.--open {
-    transform: translateX(-300px);
+    max-width: 1440px;
   }
 }
 
@@ -173,15 +174,17 @@ ul {
 }
 
 aside {
+  align-self: flex-start;
   left: 100%;
   opacity: 0;
-  position: absolute;
+  position: sticky;
   right: 0;
-  top: 0;
+  top: 8px;
   transition: 0.3s;
-  width: 600px;
+  flex: 0;
 
   .--open & {
+    flex: 3;
     opacity: 1;
   }
 }
