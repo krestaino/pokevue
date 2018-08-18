@@ -37,8 +37,8 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #585858;
-  margin: 2% auto;
-  max-width: 600px;
+  padding: 3rem;
+  max-width: 2560px;
   width: 100%;
 
   @media (max-width: 680px) {
@@ -50,7 +50,7 @@ body {
     color: #fff;
     font-size: 20px;
     font-weight: 300;
-    padding: 16px;
+    margin-bottom: 1rem;
     text-align: center;
   }
 }
